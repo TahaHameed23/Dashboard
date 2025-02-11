@@ -78,7 +78,7 @@ const Form = ({ setUser, user }) => {
     </div>
 
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-      {step === 1 && <StepOne setUser={setUser} nextStep={nextStep} trigger={trigger} register={register} errors={errors} />}
+      {step === 1 && <StepOne setUser={setUser} nextStep={nextStep} trigger={trigger} register={register} errors={errors} getValues={getValues} />}
       {step === 2 && (
         <EmailVerification 
           setVerified={setVerified} 

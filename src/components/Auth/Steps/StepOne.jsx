@@ -1,11 +1,19 @@
-import { useState } from "react";
+import {  useState } from "react";
+const API_URL = import.meta.env.VITE_API_URL;
 
-const StepOne = ({ setUser, nextStep, register, errors, trigger }) => {
+const StepOne = ({ setUser, nextStep, register, errors, trigger, getValues }) => {
   const [errorMessage, setErrorMessage] = useState("");
+
+
 
   const handleNext = async () => {
     const isValid = await trigger();
     if (isValid) {
+      const res = await fetch(`${API_URL}/auth/check?email=${getValues("email")}`);
+      if(res.status===409) {
+        setErrorMessage("User with this email already exists");
+        return
+      }
       nextStep();
     } else {
       setErrorMessage("Please fill in all required fields correctly.");
@@ -47,7 +55,7 @@ const StepOne = ({ setUser, nextStep, register, errors, trigger }) => {
             className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300"
           />
           {errors.email && (
-            <p className="mt-1 text-sm text-red-500">{errors.email.message}</p>
+            <p className="mt-1 text-md text-red-500">{errors.email.message}</p>
           )}
         </div>
 
@@ -88,7 +96,9 @@ const StepOne = ({ setUser, nextStep, register, errors, trigger }) => {
         <button
           type="button"
           onClick={handleNext}
-          className="w-full px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-all duration-300"
+          className={`w-full px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-all duration-700 ${
+            errors.email ? "mt-0" : "-mt-2"
+          }`}
         >
           Next
         </button>
