@@ -7,7 +7,7 @@ const EmailVerification = ({ getValues, setUser, user, prevStep, nextStep }) => 
   const [token, setToken] = useState("");
   const [OTP, setOTP] = useState(Array(6).fill(""));
   const [verified, setVerified] = useState(false);
-  const [timer, setTimer] = useState(6);
+  const [timer, setTimer] = useState(60);
   const [isResendDisabled, setIsResendDisabled] = useState(true);
 
   useEffect(() => {

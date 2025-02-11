@@ -3,19 +3,21 @@ import PropTypes from 'prop-types'
 import { useNavigate } from "react-router-dom";
 import {account} from "../../services/appwrite.config";
 
-const LoginComponent = ({ setUser}) => { 
+const LoginComponent = ({ setUser }) => { 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
       setLoading(true);
-      const session = await account.createEmailPasswordSession(email, password);
-      setUser(session);
+      await account.createEmailPasswordSession(email, password);
     } catch (error) {
+      setError(error);
+      console.error("Login failed:", error);
       console.error("Login failed:", error);
     } finally {
       setLoading(false);
@@ -47,7 +49,11 @@ const LoginComponent = ({ setUser}) => {
           type="email"
           placeholder="Email"
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          required 
+          onChange={(e) => {
+            setEmail(e.target.value)
+            setError(null)
+          }}
           className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-lg"
         />
 
@@ -56,7 +62,11 @@ const LoginComponent = ({ setUser}) => {
           type="password"
           placeholder="Password"
           value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          required
+          onChange={(e) => {
+            setPassword(e.target.value)
+            setError(null)
+          }}
           className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-lg"
         />
 
@@ -67,6 +77,12 @@ const LoginComponent = ({ setUser}) => {
         >
           {loading ? "Logging in..." : "Log in"}
         </button>
+        {error && (
+          <div className="text-red-500 text-center">
+            {"Invalid credentials, please try again."}
+          </div>
+          
+        )}
 
         {/* Signup Link */}
         <div className="text-center text-gray-600">
