@@ -1,5 +1,7 @@
 import { createContext,useState, useContext, useEffect } from "react";
-import account from "../services/appwrite.config";
+import {account} from "../services/appwrite.config";
+import { Navigate } from "react-router-dom";
+
 
 const AuthContext = createContext();
 
@@ -12,8 +14,9 @@ export const AuthProvider = ({ children }) => {
             try {
                 const session = await account.get();
                 setUser(session);
-            } catch (error) {
+            } catch {
                 setUser(null);
+                <Navigate to={"/login"}/>
             } finally {
                 setLoading(false);
             }
@@ -28,4 +31,6 @@ export const AuthProvider = ({ children }) => {
     );
 }    
 
-export const useAuth = () => useContext(AuthContext);
+export const useAuth = () => {
+    return useContext(AuthContext);
+}
