@@ -1,9 +1,9 @@
 import { useState } from "react";
-import PropTypes from 'prop-types'
+import PropTypes from "prop-types";
 import { useNavigate } from "react-router-dom";
-import {account} from "../../services/appwrite.config";
+import { account } from "../../services/appwrite.config";
 
-const LoginComponent = ({ setUser }) => { 
+const LoginComponent = ({ setUser }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -15,90 +15,84 @@ const LoginComponent = ({ setUser }) => {
     try {
       setLoading(true);
       await account.createEmailPasswordSession(email, password);
+      const session = await account.get();
+      setUser(session);
     } catch (error) {
       setError(error);
-      console.error("Login failed:", error);
-      console.error("Login failed:", error);
     } finally {
       setLoading(false);
     }
-  }
-  
+  };
+
   return (
-    <div className="h-screen flex flex-col md:flex-row">
-    {/* Left Side - Image (Hidden on Small Screens) */}
-    <div className="hidden md:flex md:w-1/2 bg-gray-100 items-center justify-center">
-      <img 
-        src="https://img.freepik.com/free-vector/blue-abstract-background_1123-51.jpg?t=st=1739207139~exp=1739210739~hmac=cf058895b4c877aca7e28e077ab78368d7e553aa836df06f93167756331fbc66&w=740" 
-        alt="Login Illustration"
-        className="w-full h-full object-cover"
-      />
-      
-    </div>
+    <div className="flex h-screen flex-col justify-center md:flex-row">
+      {/* Right Side - Login Form */}
+      <div className="flex w-full flex-col items-center justify-center p-8 md:w-3/5">
+        <form onSubmit={handleLogin} className="w-full max-w-md space-y-6">
+          <h2 className="mb-16 text-3xl font-semibold text-gray-700">Log in your account</h2>
 
-    {/* Right Side - Login Form */}
-    <div className="w-full md:w-1/2 flex flex-col justify-center items-center p-8">
-      <form 
-        onSubmit={handleLogin} 
-        className="max-w-md w-full space-y-6"
-      >
-        <h2 className="text-3xl font-bold text-center text-gray-700">Log in</h2>
+          {/* Email Input */}
+          <label htmlFor="email">Email or Account ID (8 digit)</label>
+          <input
+            type="email"
+            value={email}
+            required
+            onChange={(e) => {
+              setEmail(e.target.value);
+              setError(null);
+            }}
+            className="mt-2 w-full rounded-lg border border-gray-300 px-4 py-3 text-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
 
-        {/* Email Input */}
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          required 
-          onChange={(e) => {
-            setEmail(e.target.value)
-            setError(null)
-          }}
-          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-lg"
-        />
-
-        {/* Password Input */}
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          required
-          onChange={(e) => {
-            setPassword(e.target.value)
-            setError(null)
-          }}
-          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-lg"
-        />
-
-        {/* Login Button */}
-        <button
-          type="submit"
-          className="w-full py-3 text-lg font-semibold bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all"
-        >
-          {loading ? "Logging in..." : "Log in"}
-        </button>
-        {error && (
-          <div className="text-red-500 text-center">
-            {"Invalid credentials, please try again."}
+          {/* Password Input */}
+          <div>
+            <label htmlFor="password">Password</label>
+            <input
+              type="password"
+              value={password}
+              required
+              onChange={(e) => {
+                setPassword(e.target.value);
+                setError(null);
+              }}
+              className="mt-2 w-full rounded-lg border border-gray-300 px-4 py-3 text-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <a href="/login/reset-password" className="text-sm text-blue-700">
+              Forgetten password?
+            </a>
           </div>
-          
-        )}
 
-        {/* Signup Link */}
-        <div className="text-center text-gray-600">
-          <span>New user? </span>
-          <button 
-            type="button" 
-            onClick={() => navigate("/signup")} 
-            className="text-blue-600 underline hover:text-blue-700 transition-all"
+          {/* Login Button */}
+          <button
+            type="submit"
+            className="mt-4 w-full rounded-lg bg-blue-600 py-3 text-lg font-semibold text-white transition-all hover:bg-blue-700"
           >
-            Create an account
+            {loading ? "Logging in..." : "Log in"}
           </button>
-        </div>
-      </form>
+          {error && <div className="text-center text-red-500">{"Invalid credentials, please try again."}</div>}
+
+          {/* Signup Link */}
+          <div className="text-center text-gray-600">
+            <span>New user? </span>
+            <button
+              type="button"
+              onClick={() => navigate("/signup")}
+              className="cursor-pointer text-blue-600 underline transition-all hover:text-blue-700"
+            >
+              Create an account
+            </button>
+          </div>
+        </form>
+      </div>
+      {/* Left Side - Image (Hidden on Small Screens) */}
+      <div className="hidden items-center justify-center bg-gray-100 md:flex md:w-2/5">
+        <img
+          src="https://res.cloudinary.com/dlsujv3gk/image/upload/v1739469716/blue-abstract-background_1123-51_dlrqkc.avif"
+          alt="Login Illustration"
+          className="h-full w-full object-cover"
+        />
+      </div>
     </div>
-  </div>
-  
   );
 };
 
