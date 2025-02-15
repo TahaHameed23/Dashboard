@@ -1,16 +1,16 @@
 import { useAuth } from "../context/AuthContext";
 import SignupComponent from "../components/Auth/SignupComponent";
-
+import Loading from "../components/ui/Loading";
+import Header from "../components/ui/Header";
 export default function Signup() {
   const { user, loading, setUser } = useAuth();
-  
+
   return loading ? (
-    <div className="flex items-center justify-center h-screen">
-      <span className="font-semibold text-3xl">Loading...</span>
-    </div>
+    <Loading />
   ) : (
     <>
-    <SignupComponent setUser={setUser} user={user}/>
+      <Header />
+      <SignupComponent setUser={setUser} user={user} />
     </>
   );
 }

@@ -1,6 +1,8 @@
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import LoginComponent from "../components/Auth/LoginComponent";
+import Header from "../components/ui/Header";
+import Loading from "../components/ui/Loading";
 import { useEffect } from "react";
 
 export default function Login() {
@@ -8,17 +10,16 @@ export default function Login() {
   let navigate = useNavigate();
 
   useEffect(() => {
-    if(user){
-      navigate('/');
-    }    
-  },[user, navigate]);
+    if (user) {
+      navigate("/");
+    }
+  }, [user, navigate]);
 
   return loading ? (
-    <div className="flex items-center justify-center h-screen">
-      <span className="font-semibold text-3xl">Loading...</span>
-    </div>
+    <Loading />
   ) : (
     <div>
+      <Header />
       <LoginComponent setUser={setUser} />
     </div>
   );
