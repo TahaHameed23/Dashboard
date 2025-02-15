@@ -9,6 +9,9 @@ import StepTwo from "./Steps/StepTwo";
 import StepThree from "./Steps/StepThree";
 import EmailVerification from "./EmailVerification";
 
+const DATABASE_ID = import.meta.env.VITE_APPWRITE_DATABASE_ID;
+const COLLECTION_ID = import.meta.env.VITE_APPWRITE_COLLECTION_ID;
+
 const Form = ({ setUser, user }) => {
   const methods = useForm({ mode: "onChange" });
   const {
@@ -27,7 +30,7 @@ const Form = ({ setUser, user }) => {
     setLoading(true);
     try {
       const { Password, ...formData } = getValues();
-      await db.createDocument("67ab536000182ce07dca", "67ab536a0005445dda28", ID.unique(), formData).then(() => {
+    await db.createDocument(DATABASE_ID, COLLECTION_ID, ID.unique(), formData).then(() => {
         navigate("/");
       });
     } catch (error) {
