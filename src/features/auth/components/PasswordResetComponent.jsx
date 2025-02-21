@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
 import { useState, useEffect } from "react";
-import { account } from "../../services/appwrite.config";
+import { account } from "../../../services/appwrite.config";
 import { useNavigate } from "react-router-dom";
 
 export const ResetPassword = ({ loading, setLoading, errorMessage, setErrorMessage }) => {

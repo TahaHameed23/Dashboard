@@ -10,7 +10,7 @@ const StepOne = ({ setUser, nextStep, register, errors, trigger, getValues }) =>
     const isValid = await trigger();
     if (isValid) {
       setLoading(true);
-      const res = await fetch(`${API_URL}/auth/check?email=${getValues("email")}`);
+      const res = await fetch(`${API_URL}/auth/client/check?email=${getValues("email")}`);
       if (res.status === 409) {
         setLoading(false);
         return setErrorMessage("User with this email already exists");
