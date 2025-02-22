@@ -1,7 +1,7 @@
 import { useState } from "react";
 import PropTypes from "prop-types";
 import { useNavigate } from "react-router-dom";
-import { account } from "../../services/appwrite.config";
+import { account } from "../../../services/appwrite.config";
 
 const LoginComponent = ({ setUser }) => {
   const [email, setEmail] = useState("");

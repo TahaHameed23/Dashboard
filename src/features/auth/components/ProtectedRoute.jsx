@@ -1,6 +1,7 @@
+/* eslint-disable react/prop-types */
 import { Navigate } from "react-router-dom";
-import { useAuth } from "../../context/AuthContext";
-import Loading from "../ui/Loading";
+import { useAuth } from "../../../context/AuthContext";
+import Loading from "../../../components/Loading";
 
 const ProtectedRoute = ({ children }) => {
   const { user, loading } = useAuth();

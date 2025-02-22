@@ -1,8 +1,8 @@
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
-import LoginComponent from "../components/Auth/LoginComponent";
-import Header from "../components/ui/Header";
-import Loading from "../components/ui/Loading";
+import LoginComponent from "../features/auth/components/LoginComponent"
+import Header from "../components/Header"
+import Loading from "../components/Loading";
 import { useEffect } from "react";
 
 export default function Login() {
