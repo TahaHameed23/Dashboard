@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
 import { createContext,useState, useContext, useEffect } from "react";
-import account from "../services/appwrite.config";
+import {account} from "../services/appwrite.config";
 
 const AuthContext = createContext();
 
