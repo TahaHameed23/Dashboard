@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import Header from "../components/ui/Header";
-import { ResetPassword, UpdatePassword } from "../components/Auth/PasswordResetComponent";
+import Header from "../components/Header";
+import { ResetPassword, UpdatePassword } from "../features/auth/components/PasswordResetComponent"
 
 export default function PasswordReset() {
   const [loading, setLoading] = useState(false);

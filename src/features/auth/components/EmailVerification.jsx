@@ -1,7 +1,8 @@
 /* eslint-disable react/prop-types */
-import { account } from "../../services/appwrite.config";
+import { account } from "../../../services/appwrite.config";
 import { ID } from "appwrite";
 import { useState, useEffect } from "react";
+import { sendNewClientData } from "../lib/auth";
 
 const EmailVerification = ({ getValues, setUser, user, prevStep, nextStep }) => {
   const [loading, setLoading] = useState(false);
@@ -46,6 +47,10 @@ const EmailVerification = ({ getValues, setUser, user, prevStep, nextStep }) => 
         getValues("fullName"),
       );
       const token = await account.createEmailToken(new_acc.$id, getValues("email"));
+      if (token.code===429){
+        setOtpError("Too many requests. Please try again later.");
+        return;
+      }
       setToken(token);
       setIsResendDisabled(true);
       setTimer(60);
@@ -106,7 +111,7 @@ const EmailVerification = ({ getValues, setUser, user, prevStep, nextStep }) => 
     try {
       setLoading(true);
       await account.createSession(token.userId, OTP.join(""));
-      const session = await account.get();
+      const session = await account.get().then(async(session)=>await sendNewClientData(session));
       setUser(session);
       setVerified(true);
       setLoading(false);

@@ -3,7 +3,7 @@ import { ID } from "appwrite";
 import { useState } from "react";
 import { useForm, FormProvider } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
-import { db } from "../../services/appwrite.config";
+import { db } from "../../../services/appwrite.config";
 import StepOne from "./Steps/StepOne";
 import StepTwo from "./Steps/StepTwo";
 import StepThree from "./Steps/StepThree";

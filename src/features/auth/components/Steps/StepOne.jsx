@@ -1,16 +1,16 @@
 /* eslint-disable react/prop-types */
 import { useState } from "react";
+import { get } from "../../../../lib/fetch";
 
 const StepOne = ({ setUser, nextStep, register, errors, trigger, getValues }) => {
   const [errorMessage, setErrorMessage] = useState("");
   const [loading, setLoading] = useState(false);
-  const API_URL = decodeURIComponent(import.meta.env.VITE_API_URL.trim());
-
+  
   const handleNext = async () => {
     const isValid = await trigger();
     if (isValid) {
       setLoading(true);
-      const res = await fetch(`${API_URL}/auth/check?email=${getValues("email")}`);
+      const res = await get("/auth/client/check", { email: getValues("email") });
       if (res.status === 409) {
         setLoading(false);
         return setErrorMessage("User with this email already exists");
