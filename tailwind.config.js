@@ -5,6 +5,9 @@ export default {
   content: [
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
+    "./src/components/**/*.{js,ts,jsx,tsx}",
+    "./src/lib/*.{js,ts,jsx,tsx}",
+    "./src/pages/*.{js,ts,jsx,tsx}",
 
     // Path to Tremor module
     "./node_modules/@tremor/**/*.{js,ts,jsx,tsx}",
@@ -44,36 +47,7 @@ export default {
             inverted: colors.white,
           },
         },
-        // dark mode
-        'dark-tremor': {
-          brand: {
-            faint: '#0B1229',
-            muted: colors.blue[950],
-            subtle: colors.blue[800],
-            DEFAULT: colors.blue[500],
-            emphasis: colors.blue[400],
-            inverted: colors.blue[950],
-          },
-          background: {
-            muted: '#131A2B',
-            subtle: colors.gray[800],
-            DEFAULT: colors.gray[900],
-            emphasis: colors.gray[300],
-          },
-          border: {
-            DEFAULT: colors.gray[800],
-          },
-          ring: {
-            DEFAULT: colors.gray[800],
-          },
-          content: {
-            subtle: colors.gray[600],
-            DEFAULT: colors.gray[500],
-            emphasis: colors.gray[200],
-            strong: colors.gray[50],
-            inverted: colors.gray[950],
-          },
-        },
+      
       },
       boxShadow: {
         // light
@@ -100,6 +74,32 @@ export default {
         'tremor-title': ['1.125rem', { lineHeight: '1.75rem' }],
         'tremor-metric': ['1.875rem', { lineHeight: '2.25rem' }],
       },
+    },
+    keyframes: {
+      dialogOverlayShow: {
+        from: { opacity: "0" },
+        to: { opacity: "1" },
+      },
+      dialogContentShow: {
+        from: {
+          opacity: "0",
+          transform: "translate(-50%, -45%) scale(0.95)",
+        },
+        to: { opacity: "1", transform: "translate(-50%, -50%) scale(1)" },
+      },
+      pulse: {
+        "0%, 100%": { transform: "scale(1)" },
+        "50%": { transform: "scale(1.15)" },
+      },      
+    },
+    animation: {
+      // Dialog
+      pulse: "pulse 1s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+      fadeIn: "fadeIn 0.3s ease-in-out",
+      dialogOverlayShow:
+        "dialogOverlayShow 150ms cubic-bezier(0.16, 1, 0.3, 1)",
+      dialogContentShow:
+        "dialogContentShow 150ms cubic-bezier(0.16, 1, 0.3, 1)",
     },
   },
   safelist: [
@@ -131,5 +131,5 @@ export default {
         /^(fill-(?:slate|gray|zinc|neutral|stone|red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose)-(?:50|100|200|300|400|500|600|700|800|900|950))$/,
     },
   ],
-  plugins: [(await import('@headlessui/tailwindcss')).default, (await import('@tailwindcss/forms')).default],
+  // plugins: [(require('@headlessui/tailwindcss')).default, (require('@tailwindcss/forms')).default],
 }
