@@ -7,7 +7,7 @@ const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const excludedRoutes = ["/login", "/login/reset-password", "/signup"];
+  const excludedRoutes = ["/login", "/login/reset-password", "/signup", "/chat?mode=demo"];
 
   useEffect(() => {
     if (excludedRoutes.includes(window.location.pathname)) {
