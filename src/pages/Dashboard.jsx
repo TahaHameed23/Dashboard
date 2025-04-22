@@ -1,28 +1,44 @@
-import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { Outlet } from "react-router-dom"; // Add Outlet
 import { useAuth } from "../context/AuthContext";
-import { account } from "../services/appwrite.config";
+import Sidebar from "../features/dashboard/components/ui/Sidebar";
+import { DashboardProvider } from "../features/dashboard/context/DashboardContext";
+import FloatingChatButton from "../features/chat-assistant/components/FloatingChatButton";
+
 
 export default function Dashboard() {
-  const { user, setUser } = useAuth();
-  const navigate = useNavigate();
+  const { user } = useAuth();
+  const [isCollapsed, setIsCollapsed] = useState(true);
 
-  const handleLogout = async () => {
-    try {
-      await account.deleteSession("current");
-      setUser(null);
-      navigate("/login");
-    } catch (error) {
-      console.error("Logout failed:", error);
-    }
+  const handleSidebarToggle = (collapsed) => {
+    setIsCollapsed(collapsed);
   };
 
   return (
-    <>
-      <h2>Hello, {user.name}</h2>
-      <div className="flex h-screen items-center justify-center">
-        <span className="text-3xl font-semibold">Dashboard</span>
-      </div>
-      <button onClick={handleLogout}>Logout</button>
-    </>
+    <DashboardProvider>
+        <div className="relative min-h-screen">
+          <div className="flex">
+            {/* Sidebar Component */}
+            <Sidebar isCollapsed={isCollapsed} onToggle={handleSidebarToggle} />
+
+            {/* Main Content */}
+            <main
+              className={`flex-1 transition-all duration-300 ${
+                isCollapsed ? "ml-16" : "ml-64"
+              }`}
+            >
+              <div className="p-4">
+                {/* Render child routes here */}
+                <Outlet />
+                {/* Logout button always visible */}
+              </div>
+            </main>
+          </div>
+
+          {/* Floating Chat Button */}
+          <FloatingChatButton />
+        </div>
+    
+    </DashboardProvider>
   );
 }
