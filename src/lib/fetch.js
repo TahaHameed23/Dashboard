@@ -1,6 +1,6 @@
 // src/lib/fetch.js
-const API_URL = decodeURIComponent(import.meta.env.VITE_API_URL.trim());
-const HEADER_AUTH_TOKEN = import.meta.env.VITE_HEADER_AUTH_TOKEN.trim();
+const API_URL = decodeURIComponent(import.meta.env.VITE_API_URL);
+const HEADER_AUTH_TOKEN = import.meta.env.VITE_HEADER_AUTH_TOKEN;
 
 function buildQueryString(params) {
     return Object.keys(params)
