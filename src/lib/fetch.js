@@ -1,6 +1,6 @@
 // src/lib/fetch.js
 const API_URL = decodeURIComponent(import.meta.env.VITE_API_URL);
-const HEADER_AUTH_TOKEN = import.meta.env.HEADER_AUTH_TOKEN;
+const HEADER_AUTH_TOKEN = import.meta.env.VITE_HEADER_AUTH_TOKEN;
 
 function buildQueryString(params) {
     return Object.keys(params)
@@ -12,7 +12,7 @@ const headers =
 {
     'Content-Type': 'application/json',
     "Authorization": `Bearer ${HEADER_AUTH_TOKEN}`,
-    "x-api-key":"2a8b9a42-b720c1cb",
+    "X-Client-Version": "1.0.0",  
 };
 
 export async function get(endpoint, params={}) {
