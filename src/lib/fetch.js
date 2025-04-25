@@ -8,20 +8,22 @@ function buildQueryString(params) {
         .join('&');
 }
 
-const headers = 
-{
-    'Content-Type': 'application/json',
-    "Authorization": `Bearer ${HEADER_AUTH_TOKEN}`,
-    "X-Client-Version": "1.0.0",  
-};
+function buildHeaders(apiKey) {
+    return {
+        'Content-Type': 'application/json',
+        "Authorization": `Bearer ${HEADER_AUTH_TOKEN}`,
+        "X-Client-Version": "1.0.0",
+        ...(apiKey && { "x-api-key": apiKey })
+    };
+}
 
-export async function get(endpoint, params={}) {
+export async function get(endpoint, params = {}, apiKey) {
     if (params) {
         endpoint += '?' + buildQueryString(params);
     }
     const response = await fetch(`${API_URL}${endpoint}`, {
         method: 'GET',
-        headers: headers
+        headers: buildHeaders(apiKey)
     });
     if (!response.ok) {
         throw new Error(`Error: ${response.statusText}`);
@@ -29,13 +31,13 @@ export async function get(endpoint, params={}) {
     return response.json();
 }
 
-export async function post(endpoint, data, params={}) {
+export async function post(endpoint, data, params = {}, apiKey) {
     if (params) {
         endpoint += '?' + buildQueryString(params);
     }
     const response = await fetch(`${API_URL}${endpoint}`, {
         method: 'POST',
-        headers: headers,
+        headers: buildHeaders(apiKey),
         body: JSON.stringify(data)
     });
     if (!response.ok) {

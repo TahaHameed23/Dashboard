@@ -37,7 +37,8 @@ export default function Account() {
 
   const generateApiKey = async () => {
     try {
-      const response = await post("/client/key/create");
+      // Pass the first API key if available, otherwise undefined
+      const response = await post("/client/key/create", {}, {}, apiKeys[0]?.key);
       setApiKeys((prev) => [...prev, response.data]);
       toast.success("API key generated successfully!");
     } catch (error) {
