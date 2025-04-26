@@ -5,6 +5,7 @@ import { account } from "../../../services/appwrite.config";
 import { get, post } from "../../../lib/fetch";
 import { RiFileCopyLine } from "@remixicon/react";
 import toast, { Toaster } from "react-hot-toast";
+import { useApiKeys } from "../context/DashboardContext"; // <-- Import from DashboardContext
 
 export default function Account() {
   const navigate = useNavigate();
@@ -13,7 +14,7 @@ export default function Account() {
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [activeTab, setActiveTab] = useState("account");
- const [apiKeys, setApiKeys] = useState([]);
+  const { apiKeys, setApiKeys } = useApiKeys(); // <-- Use global context
 
   const [billing] = useState({
     plan: "Pro",

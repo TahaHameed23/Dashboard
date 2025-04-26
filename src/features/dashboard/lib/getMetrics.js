@@ -1,9 +1,8 @@
 import { get } from "../../../lib/fetch";
 
-// Base function for fetching metrics with error handling
-async function fetchMetricsData(endpoint, params) {
+async function fetchMetricsData(endpoint, params, apiKey) {
   try {
-    const response = await get(`/analytics${endpoint}`, params);
+    const response = await get(`/analytics${endpoint}`, params, apiKey);
     return response;
   } catch (error) {
     console.error(`Error fetching metrics from ${endpoint}:`, error);
@@ -34,27 +33,27 @@ function getDateRanges() {
 }
 
 // Retention metrics
-export async function getRetentionMetrics(params) {
-  return fetchMetricsData('/retention', params);
+export async function getRetentionMetrics(params, apiKey) {
+  return fetchMetricsData('/retention', params, apiKey);
 }
 
 // Top pages metrics
-export async function getTopPagesMetrics(params) {
-  return fetchMetricsData('/top-pages', params);
+export async function getTopPagesMetrics(params, apiKey) {
+  return fetchMetricsData('/top-pages', params, apiKey);
 }
 
 // User behavior metrics
-export async function getUserBehaviorMetrics(params) {
-  return fetchMetricsData('/user-behavior', params);
+export async function getUserBehaviorMetrics(params, apiKey) {
+  return fetchMetricsData('/user-behavior', params, apiKey);
 }
 
 // Overview metrics with comparison
-export async function getOverviewMetrics(params) {
+export async function getOverviewMetrics(params, apiKey) {
   const dateRanges = getDateRanges();
-  
+
   const [currentData, previousData] = await Promise.all([
-    fetchMetricsData('/overview', { ...params, ...dateRanges.current }),
-    fetchMetricsData('/overview', { ...params, ...dateRanges.previous })
+    fetchMetricsData('/overview', { ...params, ...dateRanges.current }, apiKey),
+    fetchMetricsData('/overview', { ...params, ...dateRanges.previous }, apiKey)
   ]);
 
   return {
@@ -88,13 +87,13 @@ function calculatePercentageChange(previous, current) {
 }
 
 // Function to fetch all metrics at once
-export async function getAllMetrics(params) {
+export async function getAllMetrics(params, apiKey) {
   try {
     const [retention, topPages, userBehavior, overview] = await Promise.all([
-      getRetentionMetrics(params),
-      getTopPagesMetrics(params),
-      getUserBehaviorMetrics(params),
-      getOverviewMetrics(params)
+      getRetentionMetrics(params, apiKey),
+      getTopPagesMetrics(params, apiKey),
+      getUserBehaviorMetrics(params, apiKey),
+      getOverviewMetrics(params, apiKey)
     ]);
     
     return {
@@ -105,6 +104,6 @@ export async function getAllMetrics(params) {
     };
   } catch (error) {
     console.error('Error fetching all metrics:', error);
-  throw error;
+    throw error;
   }
 }
