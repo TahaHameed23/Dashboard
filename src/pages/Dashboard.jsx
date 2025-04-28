@@ -1,13 +1,11 @@
 import { useState } from "react";
 import { Outlet } from "react-router-dom"; // Add Outlet
-import { useAuth } from "../context/AuthContext";
 import Sidebar from "../features/dashboard/components/ui/Sidebar";
 import { DashboardProvider } from "../features/dashboard/context/DashboardContext";
 import FloatingChatButton from "../features/chat-assistant/components/FloatingChatButton";
 
 
 export default function Dashboard() {
-  const { user } = useAuth();
   const [isCollapsed, setIsCollapsed] = useState(true);
 
   const handleSidebarToggle = (collapsed) => {

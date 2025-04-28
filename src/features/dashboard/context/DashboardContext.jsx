@@ -33,15 +33,33 @@ export function DashboardProvider({ children }) {
 
   useEffect(() => {
     async function fetchApiKeys() {
-    // Fetch API keys from local storage or set default values
-     const response = await get("/auth/key/get", { client_id: user.$id });
-     const apiKeysArray = Array.isArray(response.data) ? response.data : [response.data];
+      // Try to get API keys from localStorage first
+      const storedKeys = localStorage.getItem('apiKeys');
+      if (storedKeys) {
+        try {
+          const parsedKeys = JSON.parse(storedKeys);
+          setApiKeys(parsedKeys);
+          return;
+        } catch (e) {
+          // If parsing fails, continue to fetch from API
+        }
+      }
+      // Fetch API keys from API if not in localStorage
+      const response = await get("/auth/key/get", { client_id: user.$id });
+      const apiKeysArray = Array.isArray(response.data) ? response.data : [response.data];
       setApiKeys(apiKeysArray);
-
+      localStorage.setItem('apiKeys', JSON.stringify(apiKeysArray));
     }
-    fetchApiKeys();    
+    fetchApiKeys();
   }, []);
 
+  // Fetch data when apiKeys changes and is a non-empty array
+  useEffect(() => {
+    if (Array.isArray(apiKeys) && apiKeys.length > 0) {
+      fetchData(true);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [apiKeys]);
 
   const fetchData = async (force = false) => {
     // Check if we should use cached data
@@ -52,7 +70,12 @@ export function DashboardProvider({ children }) {
 
     setLoading(true);
     try {
-      const metrics = await getAllMetrics(null, apiKeys[0].key); // Pass API keys to getAllMetrics
+      // Ensure apiKeys is an array and has at least one element
+      const key = Array.isArray(apiKeys) && apiKeys.length > 0 ? apiKeys[0].key : null;
+      if (!key) {
+        throw new Error('No API key available');
+      }
+      const metrics = await getAllMetrics(null, key); // Pass API key to getAllMetrics
       setData(metrics);
       setLastFetchTime(now);
       setError(null);
@@ -64,10 +87,6 @@ export function DashboardProvider({ children }) {
     }
   };
 
-  // Initial data fetch
-  useEffect(() => {
-    fetchData();
-  }, []);
 
   const value = useMemo(() => ({
     data,
