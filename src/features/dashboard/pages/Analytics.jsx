@@ -1,6 +1,7 @@
 import { Card, Text, Title, Metric, Badge } from "@tremor/react";
 import { useDashboard } from '../context/DashboardContext';
 import TopBar from '../components/TopBar';
+import { EmptyDashboard } from "../components/EmptyDashboard";
 
 const generateInsights = (data) => {
   // Safe data extraction with defaults
@@ -113,7 +114,11 @@ const generateInsights = (data) => {
 };
 
 const Analytics = () => {
-  const { data, loading, error } = useDashboard();
+  const { data, loading, error , newUser} = useDashboard();
+
+   if(newUser){
+      return <EmptyDashboard/>
+    }
 
   if (loading) {
     return (

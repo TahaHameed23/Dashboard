@@ -14,11 +14,11 @@ async function fetchMetricsData(endpoint, params, apiKey) {
 function getDateRanges() {
   const end = new Date();
   const start = new Date();
-  start.setDate(start.getDate() - 30); // Last 30 days
+  start.setFullYear(start.getFullYear() - 1); // Start from one year ago
 
   const previousEnd = new Date(start);
   const previousStart = new Date(start);
-  previousStart.setDate(previousStart.getDate() - 30); // Previous 30 days
+  previousStart.setFullYear(previousStart.getFullYear() - 1); // Previous period from two years ago
 
   return {
     current: {

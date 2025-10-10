@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { useAuth } from "../../../context/AuthContext";
 import { account } from "../../../services/appwrite.config";
-import { get, post } from "../../../lib/fetch";
+import { post } from "../../../lib/fetch";
 import { RiFileCopyLine } from "@remixicon/react";
 import toast, { Toaster } from "react-hot-toast";
 import { useApiKeys } from "../context/DashboardContext"; // <-- Import from DashboardContext
@@ -16,6 +17,13 @@ export default function Account() {
   const [activeTab, setActiveTab] = useState("account");
   const { apiKeys, setApiKeys } = useApiKeys(); // <-- Use global context
 
+
+  const location = useLocation();  useEffect(() => {
+    if (location.state && location.state.tab) {
+      setActiveTab(location.state.tab);
+    }
+  }, [location]);
+  
   const [billing] = useState({
     plan: "Pro",
     cost: "$0/month",
@@ -23,25 +31,14 @@ export default function Account() {
     status: "Active",
   });
 
-  const getApiKey = async () => {
-    if (apiKeys.length > 0) {
-      return; // Avoid fetching if API keys are already cached
-    }
-    try {
-      const response = await get("/auth/key/get", { client_id: user.$id });
-      const apiKeysArray = Array.isArray(response.data) ? response.data : [response.data];
-      setApiKeys(apiKeysArray);
-    } catch (error) {
-      console.error("Failed to fetch API keys:", error);
-    }
-  };
 
   const generateApiKey = async () => {
     try {
       // Pass the first API key if available, otherwise undefined
-      const response = await post("/client/key/create", {}, {}, apiKeys[0]?.key);
+      const response = await post("/auth/key/create", {email:email}, null, apiKeys[0]?.key);
       setApiKeys((prev) => [...prev, response.data]);
       toast.success("API key generated successfully!");
+      window.location.reload();
     } catch (error) {
       console.error("Failed to generate API key:", error);
       toast.error("Failed to generate API key.");
@@ -56,12 +53,6 @@ export default function Account() {
       toast.error("Failed to copy.");
     });
   };
-
-  useEffect(() => {
-    if (activeTab === "api") {
-      getApiKey();
-    }
-  }, [activeTab]);
 
   const handleLogout = async () => {
     try {
@@ -99,7 +90,7 @@ export default function Account() {
 
   // Fix the snippet to use the first API key if available
   const getSnippetApiKey = () => {
-    return apiKeys.length > 0 ? apiKeys[0].key : "YOUR_API_KEY";
+      return apiKeys[0] !== null ? apiKeys[0].key : "YOUR_API_KEY"    
   };
 
   const dfSnippet = `(()=>{"use strict";var a="analytics",t=window[a]=window[a]||[];t.load=function(a){var t="http://localhost:3000/analytics/v1/"+a+"/analytics.min.js",n=document.createElement("script");n.type="text/javascript",n.async=!0,n.setAttribute("data-global-df-analytics-key",a),n.src=t,n.onload=()=>{window._analytics?window.analytics=_analytics.init({plugins:[analyticsEventPlugin(a)]}):console.error("Analytics script failed to load."),analytics.page()};var i=document.getElementsByTagName("script")[0];i.parentNode.insertBefore(n,i)},t.SNIPPET_VERSION="1.0.0",t._key="${getSnippetApiKey()}",
@@ -241,9 +232,14 @@ export default function Account() {
             <div className="mt-6 bg-white shadow-md rounded-lg p-6">
               <h4 className="text-lg font-semibold text-gray-900">API Keys</h4>
               <p className="mt-1 text-base text-gray-600">
-                Manage your API keys for integrating with @datafloww/analytics.
+                Manage your API key for integrating with @datafloww/analytics.
               </p>
               <div className="overflow-x-auto">
+                {apiKeys[0] === null ? (
+                  <p className="mt-4 text-base text-gray-600">
+                    No API key found. Generate a new API key to get started.
+                  </p>
+                ) : (
                 <table className="mt-4 w-full text-left border-collapse">
                   <thead>
                     <tr className="bg-gray-100">
@@ -259,13 +255,14 @@ export default function Account() {
                     </tr>
                   </thead>
                   <tbody>
+                    
                     {apiKeys.map((key, index) => (
                       <tr key={index} className="border-t border-gray-200">
                         <td className="px-4 py-2 text-sm text-gray-700">
                           {index + 1}
                         </td>
                         <td className="px-4 py-2 text-sm text-gray-700">
-                          {key.key.split("-")[0]}-*****
+                          {key.key}
                           <RiFileCopyLine
                             className="inline-flex mx-2 active:bg-slate-300 rounded-2xl py-1 cursor-pointer hover:bg-slate-100 transition-all"
                             size={28}
@@ -279,13 +276,17 @@ export default function Account() {
                     ))}
                   </tbody>
                 </table>
+                )}
               </div>
+              {apiKeys[0] === null && (
               <button
                 onClick={generateApiKey}
                 className="mt-4 px-4 py-2 bg-blue-600 text-white font-medium rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
-                Generate New API Key
+                Generate API Key
               </button>
+              )}
+
 
               {/* Segment Snippet Section */}
               <div className="mt-8">
@@ -295,12 +296,12 @@ export default function Account() {
                 <p className="mt-1 text-sm text-gray-600">
                   Copy the Datafloww snippet and paste it high in the {"<head>"} of your website.{" "}
                   <a
-                    href="https://segment.com/docs/connections/sources/catalog/libraries/website/analytics.js/"
+                    href="https://datafloww.me/docs/getting-started/installation"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-blue-600 hover:underline"
                   >
-                    Learn more about setting up in the Analytics.js guide.
+                    Learn more about setting up in the Datafloww guide.
                   </a>
                 </p>
                 <div className="mt-4 bg-gray-200 p-4 rounded-md relative">

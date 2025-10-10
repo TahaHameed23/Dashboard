@@ -24,6 +24,7 @@ export function useApiKeys() {
 const CACHE_TTL = 5 * 60 * 1000;
 
 export function DashboardProvider({ children }) {
+  const [newUser, setNewUser] = useState(false);
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -34,21 +35,24 @@ export function DashboardProvider({ children }) {
   useEffect(() => {
     async function fetchApiKeys() {
       // Try to get API keys from localStorage first
-      const storedKeys = localStorage.getItem('apiKeys');
-      if (storedKeys) {
-        try {
-          const parsedKeys = JSON.parse(storedKeys);
-          setApiKeys(parsedKeys);
-          return;
-        } catch (e) {
-          // If parsing fails, continue to fetch from API
-        }
-      }
+      // const storedKeys = localStorage.getItem('apiKeys');
+      // if (storedKeys) {
+      //   try {
+      //     const parsedKeys = JSON.parse(storedKeys);
+      //     setApiKeys(parsedKeys);
+      //     return;
+      //   } catch (e) {
+      //     // If parsing fails, continue to fetch from API
+      //   }
+      // }
       // Fetch API keys from API if not in localStorage
       const response = await get("/auth/key/get", { client_id: user.$id });
       const apiKeysArray = Array.isArray(response.data) ? response.data : [response.data];
+      if (apiKeysArray[0]===null){
+        setNewUser(true)
+      }
       setApiKeys(apiKeysArray);
-      localStorage.setItem('apiKeys', JSON.stringify(apiKeysArray));
+      // localStorage.setItem('apiKeys', JSON.stringify(apiKeysArray));
     }
     fetchApiKeys();
   }, []);
@@ -80,7 +84,7 @@ export function DashboardProvider({ children }) {
       setLastFetchTime(now);
       setError(null);
     } catch (error) {
-      console.error('Error fetching metrics:', error);
+      // console.error('Error fetching metrics:', error);
       setError('Failed to load dashboard data');
     } finally {
       setLoading(false);
@@ -96,8 +100,9 @@ export function DashboardProvider({ children }) {
     lastFetchTime,
     timeUntilRefresh: lastFetchTime ? Math.max(0, CACHE_TTL - (Date.now() - lastFetchTime)) : 0,
     apiKeys,
-    setApiKeys
-  }), [data, loading, error, lastFetchTime, apiKeys, setApiKeys]);
+    setApiKeys,
+    newUser
+  }), [data, loading, error, lastFetchTime, apiKeys, newUser]);
 
 return (
     <DashboardContext.Provider value={value}>
