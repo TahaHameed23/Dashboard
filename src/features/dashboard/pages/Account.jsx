@@ -90,7 +90,10 @@ export default function Account() {
 
   // Fix the snippet to use the first API key if available
   const getSnippetApiKey = () => {
-      return apiKeys[0] !== null ? apiKeys[0].key : "YOUR_API_KEY"    
+    // Check if apiKeys is an array and has elements, then check if first element exists and has a key
+    return (Array.isArray(apiKeys) && apiKeys.length > 0 && apiKeys[0]?.key) 
+      ? apiKeys[0].key 
+      : "YOUR_API_KEY";
   };
 
   const dfSnippet = `(()=>{"use strict";var a="analytics",t=window[a]=window[a]||[];t.load=function(a){var t="http://localhost:3000/analytics/v1/"+a+"/analytics.min.js",n=document.createElement("script");n.type="text/javascript",n.async=!0,n.setAttribute("data-global-df-analytics-key",a),n.src=t,n.onload=()=>{window._analytics?window.analytics=_analytics.init({plugins:[analyticsEventPlugin(a)]}):console.error("Analytics script failed to load."),analytics.page()};var i=document.getElementsByTagName("script")[0];i.parentNode.insertBefore(n,i)},t.SNIPPET_VERSION="1.0.0",t._key="${getSnippetApiKey()}",
@@ -235,7 +238,7 @@ export default function Account() {
                 Manage your API key for integrating with @datafloww/analytics.
               </p>
               <div className="overflow-x-auto">
-                {apiKeys[0] === null ? (
+                {!Array.isArray(apiKeys) || apiKeys.length === 0 || apiKeys[0] === null ? (
                   <p className="mt-4 text-base text-gray-600">
                     No API key found. Generate a new API key to get started.
                   </p>
@@ -278,7 +281,7 @@ export default function Account() {
                 </table>
                 )}
               </div>
-              {apiKeys[0] === null && (
+              {(!Array.isArray(apiKeys) || apiKeys.length === 0 || apiKeys[0] === null) && (
               <button
                 onClick={generateApiKey}
                 className="mt-4 px-4 py-2 bg-blue-600 text-white font-medium rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
