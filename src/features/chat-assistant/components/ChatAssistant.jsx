@@ -42,6 +42,10 @@ function ChatContent() {
     setInput('');
     setIsLoading(true);
 
+    // Add a placeholder message for streaming
+    const assistantMessageIndex = messages.length + 1;
+    setMessages(prev => [...prev, { role: 'assistant', content: '' }]);
+
     try {
       const response = await fetch(`${import.meta.env.VITE_CHAT_API_URL}/chat/completions`, {
         method: 'POST',
@@ -55,6 +59,7 @@ function ChatContent() {
           })),
           user_id: userId,
           is_demo: isDemoMode,
+          stream: true,
         }),
       });
 
@@ -62,18 +67,104 @@ function ChatContent() {
         throw new Error('Failed to get response');
       }
 
-      const data = await response.json();
-      const assistantMessage = {
-        role: 'assistant',
-        content: data.answer,
-      };
-      setMessages(prev => [...prev, assistantMessage]);
+      const contentType = response.headers.get('content-type');
+      
+      // Check if the response is a stream (text/event-stream)
+      if (contentType && contentType.includes('text/event-stream')) {
+        // Handle streaming response
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let accumulatedContent = '';
+        let hasReceivedData = false;
+
+        try {
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+
+            const chunk = decoder.decode(value, { stream: true });
+            const lines = chunk.split('\n');
+
+            for (const line of lines) {
+              if (line.startsWith('data: ')) {
+                const data = line.slice(6); // Remove 'data: ' prefix
+                
+                if (data === '[DONE]') {
+                  hasReceivedData = true;
+                  continue;
+                }
+
+                try {
+                  const parsed = JSON.parse(data);
+                  const content = parsed.choices?.[0]?.delta?.content || parsed.content || '';
+                  
+                  if (content) {
+                    hasReceivedData = true;
+                    accumulatedContent += content;
+                    // Update the assistant message in real-time
+                    setMessages(prev => {
+                      const newMessages = [...prev];
+                      newMessages[assistantMessageIndex] = {
+                        role: 'assistant',
+                        content: accumulatedContent
+                      };
+                      return newMessages;
+                    });
+                  }
+                } catch (parseError) {
+                  console.error('Error parsing SSE data:', parseError);
+                }
+              }
+            }
+          }
+
+          // Check if stream was empty
+          if (!hasReceivedData || accumulatedContent.trim() === '') {
+            console.warn('Empty response received from stream');
+            setMessages(prev => {
+              const newMessages = [...prev];
+              newMessages[assistantMessageIndex] = {
+                role: 'assistant',
+                content: 'No response available at the moment.'
+              };
+              return newMessages;
+            });
+          }
+        } catch (streamError) {
+          console.error('Stream error:', streamError);
+          // If stream had an error, update with error message
+          setMessages(prev => {
+            const newMessages = [...prev];
+            newMessages[assistantMessageIndex] = {
+              role: 'assistant',
+              content: 'Unable to process the request.'
+            };
+            return newMessages;
+          });
+        }
+      } else {
+        // Handle regular JSON response (fallback)
+        const data = await response.json();
+        const content = data.answer || data.content || 'No response received';
+        setMessages(prev => {
+          const newMessages = [...prev];
+          newMessages[assistantMessageIndex] = {
+            role: 'assistant',
+            content: content
+          };
+          return newMessages;
+        });
+      }
     } catch (error) {
       console.error('Error:', error);
-      setMessages(prev => [...prev, {
-        role: 'assistant',
-        content: 'Sorry, there was an error processing your request.',
-      }]);
+      setMessages(prev => {
+        const newMessages = [...prev];
+        newMessages[assistantMessageIndex] = {
+          role: 'assistant',
+          content: 'Sorry, there was an error processing your request.'
+        };
+        return newMessages;
+      });
     } finally {
       setIsLoading(false);
     }

@@ -13,6 +13,9 @@ const EmailVerification = ({ getValues, setUser, user, prevStep, nextStep }) => 
   const [timer, setTimer] = useState(60);
   const [isResendDisabled, setIsResendDisabled] = useState(true);
 
+  console.log(verified);
+  
+
   useEffect(() => {
     setVerified(false); // Reset verification when email changes
     setUser(null);
