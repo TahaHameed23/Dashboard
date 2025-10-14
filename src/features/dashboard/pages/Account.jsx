@@ -96,7 +96,7 @@ export default function Account() {
       : "YOUR_API_KEY";
   };
 
-  const dfSnippet = `(()=>{"use strict";var a="analytics",t=window[a]=window[a]||[];t.load=function(a){var t="http://localhost:3000/analytics/v1/"+a+"/analytics.min.js",n=document.createElement("script");n.type="text/javascript",n.async=!0,n.setAttribute("data-global-df-analytics-key",a),n.src=t,n.onload=()=>{window._analytics?window.analytics=_analytics.init({plugins:[analyticsEventPlugin(a)]}):console.error("Analytics script failed to load."),analytics.page()};var i=document.getElementsByTagName("script")[0];i.parentNode.insertBefore(n,i)},t.SNIPPET_VERSION="1.0.0",t._key="${getSnippetApiKey()}",
+  const dfSnippet = `(()=>{"use strict";var a="analytics",t=window[a]=window[a]||[];t.load=function(a){var t="${import.meta.env.VITE_API_URL}/analytics/v1/"+a+"/analytics.min.js",n=document.createElement("script");n.type="text/javascript",n.async=!0,n.setAttribute("data-global-df-analytics-key",a),n.src=t,n.onload=()=>{window._analytics?window.analytics=_analytics.init({plugins:[analyticsEventPlugin(a)]}):console.error("Analytics script failed to load."),analytics.page()};var i=document.getElementsByTagName("script")[0];i.parentNode.insertBefore(n,i)},t.SNIPPET_VERSION="1.0.0",t._key="${getSnippetApiKey()}",
   t.load("${getSnippetApiKey()}")})();`;
 
   return (
